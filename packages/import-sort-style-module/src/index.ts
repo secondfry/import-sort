@@ -1,6 +1,6 @@
-import {IStyleAPI, IStyleItem} from "import-sort-style";
+import { IStyleAPI, IStyleItem } from 'forked-import-sort-style';
 
-export default function(styleApi: IStyleAPI): IStyleItem[] {
+export default function (styleApi: IStyleAPI): IStyleItem[] {
   const {
     alias,
     and,
@@ -16,12 +16,12 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
 
   return [
     // import "foo"
-    {match: and(hasNoMember, isAbsoluteModule)},
-    {separator: true},
+    { match: and(hasNoMember, isAbsoluteModule) },
+    { separator: true },
 
     // import "./foo"
-    {match: and(hasNoMember, isRelativeModule)},
-    {separator: true},
+    { match: and(hasNoMember, isRelativeModule) },
+    { separator: true },
 
     // import … from "fs";
     {
@@ -29,7 +29,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
-    {separator: true},
+    { separator: true },
 
     // import … from "foo";
     {
@@ -37,7 +37,7 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
       sort: moduleName(naturally),
       sortNamedMembers: alias(unicode),
     },
-    {separator: true},
+    { separator: true },
 
     // import … from "./foo";
     // import … from "../foo";
@@ -46,6 +46,6 @@ export default function(styleApi: IStyleAPI): IStyleItem[] {
       sort: [dotSegmentCount, moduleName(naturally)],
       sortNamedMembers: alias(unicode),
     },
-    {separator: true},
+    { separator: true },
   ];
 }

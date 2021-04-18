@@ -1,6 +1,6 @@
 {
   ".ts": {
-    "parser": "babylon",
-    "style": "module"
+    "parser": "typescript",
+    "style": "module-tsconfig"
   }
 }

@@ -4,8 +4,8 @@
 // // import {assert} from "chai";
 
 // import {CLIEngine, Linter} from "eslint";
-// import {sortImports} from "import-sort";
-// import * as parser from "import-sort-parser-babylon";
+// import {sortImports} from "forked-import-sort";
+// import * as parser from "forked-import-sort-parser-babylon";
 
 // import style from "../../src";
 

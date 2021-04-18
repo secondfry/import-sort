@@ -1,11 +1,10 @@
-import {dirname, extname} from "path";
+import { dirname, extname } from 'path';
 
-import {CompositeDisposable, TextEditor} from "atom"; // eslint-disable-line
-import sortImports, {ICodeChange} from "import-sort";
-import {getConfig} from "import-sort-config";
-import {allowUnsafeEval, allowUnsafeNewFunction} from "loophole";
+import { CompositeDisposable, TextEditor } from 'atom';
+import sortImports, { ICodeChange } from 'forked-import-sort';
+import { getConfig } from 'forked-import-sort-config';
+import { allowUnsafeEval, allowUnsafeNewFunction } from 'loophole';
 
-// eslint-disable-next-line
 export class Plugin {
   public bufferWillSaveDisposables;
 
@@ -13,31 +12,26 @@ export class Plugin {
 
   public config = {
     sortOnSave: {
-      title: "Sort on save",
-      description:
-        "Automatically sort your Javascript files when you save them.",
-      type: "boolean",
+      title: 'Sort on save',
+      description: 'Automatically sort your Javascript files when you save them.',
+      type: 'boolean',
       default: false,
     },
   };
 
   public activate() {
-    atom.config.observe(
-      "atom-import-sort.sortOnSave",
-      (sortOnSave: boolean) => {
-        if (sortOnSave) {
-          this.observeEditors();
-        } else {
-          this.unobserveEditors();
-        }
-      },
-    );
+    atom.config.observe('atom-import-sort.sortOnSave', (sortOnSave: boolean) => {
+      if (sortOnSave) {
+        this.observeEditors();
+      } else {
+        this.unobserveEditors();
+      }
+    });
 
-    // tslint:disable-next-line
     atom.commands.add(
       'atom-text-editor[data-grammar~="source"][data-grammar~="js"],atom-text-editor[data-grammar~="source"][data-grammar~="ts"]',
-      "import-sort:sort",
-      () => this.sortCurrentEditor(),
+      'import-sort:sort',
+      () => this.sortCurrentEditor()
     );
   }
 
@@ -49,15 +43,13 @@ export class Plugin {
     if (!this.editorObserverDisposable) {
       this.bufferWillSaveDisposables = new CompositeDisposable();
 
-      this.editorObserverDisposable = atom.workspace.observeTextEditors(
-        editor => {
-          this.bufferWillSaveDisposables.add(
-            editor.getBuffer().onWillSave(() => {
-              this.sortEditor(editor, true);
-            }),
-          );
-        },
-      );
+      this.editorObserverDisposable = atom.workspace.observeTextEditors((editor) => {
+        this.bufferWillSaveDisposables.add(
+          editor.getBuffer().onWillSave(() => {
+            this.sortEditor(editor, true);
+          })
+        );
+      });
     }
   }
 
@@ -70,7 +62,6 @@ export class Plugin {
     }
   }
 
-  // eslint-disable-next-line
   private sortEditor(editor, notifyErrors = false) {
     const scopeDescriptor = editor.getRootScopeDescriptor();
 
@@ -88,7 +79,7 @@ export class Plugin {
     if (path) {
       const rawExtension = extname(path);
 
-      if (rawExtension.indexOf(".") !== -1) {
+      if (rawExtension.indexOf('.') !== -1) {
         extension = rawExtension;
       }
 
@@ -96,12 +87,12 @@ export class Plugin {
     } else {
       // TODO: Refactor the following if statements
 
-      if (scope.split(".").some(part => part === "js")) {
-        extension = ".js";
+      if (scope.split('.').some((part) => part === 'js')) {
+        extension = '.js';
       }
 
-      if (scope.split(".").some(part => part === "ts")) {
-        extension = ".ts";
+      if (scope.split('.').some((part) => part === 'ts')) {
+        extension = '.ts';
       }
 
       [directory] = atom.project.getPaths();
@@ -116,27 +107,21 @@ export class Plugin {
 
       if (!sortConfig) {
         if (!notifyErrors) {
-          atom.notifications.addWarning(
-            `No configuration found for this file type`,
-          );
+          atom.notifications.addWarning(`No configuration found for this file type`);
         }
 
         return;
       }
 
-      const {parser, style, config: rawConfig} = sortConfig;
+      const { parser, style, config: rawConfig } = sortConfig;
 
       if (!parser || !style) {
         if (!parser && !notifyErrors) {
-          atom.notifications.addWarning(
-            `Parser '${sortConfig.config.parser}' not found`,
-          );
+          atom.notifications.addWarning(`Parser '${sortConfig.config.parser}' not found`);
         }
 
         if (!style && !notifyErrors) {
-          atom.notifications.addWarning(
-            `Style '${sortConfig.config.style}' not found`,
-          );
+          atom.notifications.addWarning(`Style '${sortConfig.config.style}' not found`);
         }
 
         return;
@@ -149,13 +134,7 @@ export class Plugin {
 
       allowUnsafeNewFunction(() => {
         allowUnsafeEval(() => {
-          ({changes} = sortImports(
-            unsorted,
-            parser,
-            style,
-            path,
-            rawConfig.options,
-          ));
+          ({ changes } = sortImports(unsorted, parser, style, path, rawConfig.options));
         });
       });
 
@@ -171,9 +150,7 @@ export class Plugin {
       editor.setCursorBufferPosition(cursor);
     } catch (e) {
       if (!notifyErrors) {
-        atom.notifications.addWarning(
-          `Failed to sort imports:\n${e.toString()}`,
-        );
+        atom.notifications.addWarning(`Failed to sort imports:\n${e.toString()}`);
       }
     }
   }

@@ -1,7 +1,11 @@
 {
-  "name": "import-sort-parser-typescript",
-  "version": "6.0.0",
+  "name": "forked-import-sort-parser-typescript",
+  "version": "7.0.3",
   "description": "An import-sort parser based on the TypeScript parser.",
+  "keywords": [
+    "import-sort",
+    "import-sort-parser"
+  ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -12,29 +16,32 @@
     "test:watch": "mocha -w --require ts-node/register --recursive \"test/**/*.ts\"",
     "lint": "eslint --ext ts src"
   },
-  "author": "Renke Grunwald <renke@renke.org> (https://github.com/renke)",
-  "repository": "renke/import-sort",
+  "author": "Rustam SecondFry Gubaydullin <secondfry+npm@gmail.com> (https://github.com/secondfry)",
+  "contributors": [
+    "Renke Grunwald <renke@renke.org> (https://github.com/renke)"
+  ],
+  "repository": "github:secondfry/import-sort",
   "license": "ISC",
   "files": [
     "lib"
   ],
   "devDependencies": {
-    "@types/chai": "^4.1.4",
-    "@types/mocha": "^5.2.3",
-    "@types/node": "^10.3.5",
-    "@typescript-eslint/eslint-plugin": "^1.2.0",
-    "chai": "^4.0.2",
-    "eslint": "^5.13.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jsx-a11y": "^6.2.0",
-    "eslint-plugin-react": "^7.12.4",
-    "import-sort-parser": "^6.0.0",
-    "mocha": "^5.2.0",
-    "ts-node": "^8.0.2"
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^12.20.10",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "chai": "^4.3.4",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "forked-import-sort-parser": "^7.0.3",
+    "mocha": "^8.3.2",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1"
   },
   "dependencies": {
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4 || ^4.0.0"
   }
 }

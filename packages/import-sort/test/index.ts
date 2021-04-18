@@ -1,28 +1,28 @@
-import "mocha";
+import 'mocha';
 
-import {assert} from "chai";
-import * as parser from "import-sort-parser-babylon";
-import {IStyle, IStyleAPI, IStyleItem} from "import-sort-style";
+import { assert } from 'chai';
+import * as parser from 'forked-import-sort-parser-babylon';
+import { IStyle, IStyleAPI, IStyleItem } from 'forked-import-sort-style';
 
-import {applyChanges, sortImports} from "../src";
+import { applyChanges, sortImports } from '../src';
 
 const NO_BUCKET_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   return [];
 };
 
-describe("sortImports (babylon, NO_BUCKET_STYLE)", () => {
-  it("should not sort imports but keep them", () => {
+describe('sortImports (babylon, NO_BUCKET_STYLE)', () => {
+  it('should not sort imports but keep them', () => {
     const code =
       `
 import b from "b";
 import a from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
 import b from "b";
 import a from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, NO_BUCKET_STYLE);
 
@@ -34,9 +34,7 @@ import a from "a";
   });
 });
 
-const ONE_BUCKET_NATURALLY_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const ONE_BUCKET_NATURALLY_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.always,
@@ -47,19 +45,19 @@ const ONE_BUCKET_NATURALLY_STYLE: IStyle = (
   return items;
 };
 
-describe("sortImports (babylon, ONE_BUCKET_NATURALLY_STYLE)", () => {
-  it("should sort code containing only imports", () => {
+describe('sortImports (babylon, ONE_BUCKET_NATURALLY_STYLE)', () => {
+  it('should sort code containing only imports', () => {
     const code =
       `
 import b from "b";
 import a from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -70,14 +68,14 @@ import b from "b";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports and other things", () => {
+  it('should sort code containing imports and other things', () => {
     const code =
       `
 import b from "b";
 import a from "a";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -85,7 +83,7 @@ import a from "a";
 import b from "b";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -96,14 +94,14 @@ console.log("Hello World");
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports and other things", () => {
+  it('should sort code containing imports and other things', () => {
     const code =
       `
 import b from "b";
 import a from "a";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -111,7 +109,7 @@ import a from "a";
 import b from "b";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -122,14 +120,14 @@ console.log("Hello World");
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports, a comment and trailing new lines", () => {
+  it('should sort code containing imports, a comment and trailing new lines', () => {
     const code =
       `
 // Above
 
 import b from "b";
 import a from "a";
-`.trim() + "\n\n";
+`.trim() + '\n\n';
 
     const expected =
       `
@@ -137,7 +135,7 @@ import a from "a";
 
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -148,14 +146,14 @@ import b from "b";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports followed by a comment", () => {
+  it('should sort code containing imports followed by a comment', () => {
     const code =
       `
 import b from "b";
 import a from "a" // a;
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -163,7 +161,7 @@ import a from "a" // a;
 import b from "b";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -174,7 +172,7 @@ console.log("Hello World");
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports followed by a comment", () => {
+  it('should sort code containing imports followed by a comment', () => {
     const code =
       `
 import b from "b";
@@ -182,7 +180,7 @@ import b from "b";
 import a from "a";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -191,7 +189,7 @@ import a from "a";
 import b from "b";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -202,7 +200,7 @@ console.log("Hello World");
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports anywhere at top-level", () => {
+  it('should sort code containing imports anywhere at top-level', () => {
     const code =
       `
 import b from "b";
@@ -211,7 +209,7 @@ import a from "a";
 console.log("Hello");
 import c from "c";
 console.log("World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -221,7 +219,7 @@ import c from "c";
 
 console.log("Hello");
 console.log("World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -232,12 +230,12 @@ console.log("World");
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should format import such that all named members are on its own line", () => {
+  it('should format import such that all named members are on its own line', () => {
     const code =
       `
 import {a,
   b, c} from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -246,7 +244,7 @@ import {
   b,
   c
 } from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_STYLE);
 
@@ -258,9 +256,7 @@ import {
   });
 });
 
-const TWO_BUCKETS_NATURALLY_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const TWO_BUCKETS_NATURALLY_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.isAbsoluteModule,
@@ -275,15 +271,15 @@ const TWO_BUCKETS_NATURALLY_STYLE: IStyle = (
   return items;
 };
 
-describe("sortImports (babylon, TWO_BUCKETS_NATURALLY_STYLE)", () => {
-  it("should sort code containing only imports", () => {
+describe('sortImports (babylon, TWO_BUCKETS_NATURALLY_STYLE)', () => {
+  it('should sort code containing only imports', () => {
     const code =
       `
 import b from "b";
 import d from "./d";
 import a from "a";
 import c from "./c";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -291,7 +287,7 @@ import a from "a";
 import b from "b";
 import c from "./c";
 import d from "./d";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, TWO_BUCKETS_NATURALLY_STYLE);
 
@@ -302,7 +298,7 @@ import d from "./d";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports and other code", () => {
+  it('should sort code containing imports and other code', () => {
     const code =
       `
 import b from "b";
@@ -311,7 +307,7 @@ import a from "a";
 import c from "./c";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -321,7 +317,7 @@ import c from "./c";
 import d from "./d";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const result = sortImports(code, parser, TWO_BUCKETS_NATURALLY_STYLE);
 
@@ -333,9 +329,7 @@ console.log("Hello World");
   });
 });
 
-const TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.isAbsoluteModule,
@@ -353,15 +347,15 @@ const TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE: IStyle = (
   return items;
 };
 
-describe("sortImports (babylon, TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE)", () => {
-  it("should sort code containing only imports", () => {
+describe('sortImports (babylon, TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE)', () => {
+  it('should sort code containing only imports', () => {
     const code =
       `
 import b from "b";
 import d from "./d";
 import a from "a";
 import c from "./c";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -370,13 +364,9 @@ import b from "b";
 
 import c from "./c";
 import d from "./d";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -385,7 +375,7 @@ import d from "./d";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort code containing imports and other code", () => {
+  it('should sort code containing imports and other code', () => {
     const code =
       `
 import b from "b";
@@ -395,7 +385,7 @@ import a from "a";
 import c from "./c";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -406,13 +396,9 @@ import c from "./c";
 import d from "./d";
 
 console.log("Hello World");
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, TWO_BUCKETS_WITH_SEPARATOR_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -422,9 +408,7 @@ console.log("Hello World");
   });
 });
 
-const FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.not(styleApi.hasMember),
@@ -456,15 +440,15 @@ const FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE: IStyle = (
   return items;
 };
 
-describe("sortImports (babylon, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE)", () => {
-  it("should sort code containing only imports", () => {
+describe('sortImports (babylon, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE)', () => {
+  it('should sort code containing only imports', () => {
     const code =
       `
 import {d} from "./d";
 import * as c from "c";
 import b from "b";
 import "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -475,13 +459,9 @@ import b from "b";
 import * as c from "c";
 
 import {d} from "./d";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -490,25 +470,21 @@ import {d} from "./d";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should not add unnecessary separators", () => {
+  it('should not add unnecessary separators', () => {
     const code =
       `
 import {d} from "./d";
 import "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
 import "a";
 
 import {d} from "./d";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -517,20 +493,16 @@ import {d} from "./d";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should not change code containing no imports", () => {
+  it('should not change code containing no imports', () => {
     const code =
       `
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -539,23 +511,19 @@ import {d} from "./d";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort imports even placed in a single line", () => {
+  it('should sort imports even placed in a single line', () => {
     const code =
       `
 import a from "a"; import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -564,7 +532,7 @@ import b from "b";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort imports the span multiple lines", () => {
+  it('should sort imports the span multiple lines', () => {
     const code =
       `
 import {e} from "e";
@@ -574,7 +542,7 @@ import {
   d,
 } from "bcd";
 import {a} from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -585,13 +553,9 @@ import {
   d,
 } from "bcd";
 import {e} from "e";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -600,14 +564,14 @@ import {e} from "e";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should leave a blank line after headers (such as copyright texts)", () => {
+  it('should leave a blank line after headers (such as copyright texts)', () => {
     const code =
       `
 // Copyright
 
 import b from "b";
 import a from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -615,13 +579,9 @@ import a from "a";
 
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -630,13 +590,13 @@ import b from "b";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should add a blank line after the shebang", () => {
+  it('should add a blank line after the shebang', () => {
     const code =
       `
 #!/usr/bin/env node
 import b from "b";
 import a from "a";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -644,13 +604,9 @@ import a from "a";
 
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -659,26 +615,22 @@ import b from "b";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should leave no blank files if imports come first", () => {
+  it('should leave no blank files if imports come first', () => {
     const code =
-      "\n\n" +
+      '\n\n' +
       `
 import b from "b";
 import a from "a";
 `.trim() +
-      "\n";
+      '\n';
 
     const expected =
       `
 import a from "a";
 import b from "b";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE,
-    );
+    const result = sortImports(code, parser, FOUR_BUCKETS_WITH_SEPARATORS_NATURALLY_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -688,31 +640,26 @@ import b from "b";
   });
 });
 
-const ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.always,
-      sort: [
-        styleApi.moduleName(styleApi.naturally),
-        styleApi.member(styleApi.naturally),
-      ],
+      sort: [styleApi.moduleName(styleApi.naturally), styleApi.member(styleApi.naturally)],
     },
   ];
 
   return items;
 };
 
-describe("sortImports (babylon, ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE)", () => {
-  it("should sort code containing only imports", () => {
+describe('sortImports (babylon, ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE)', () => {
+  it('should sort code containing only imports', () => {
     const code =
       `
 import b from "y";
 import a from "x";
 import d from "y";
 import c from "x";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -720,13 +667,9 @@ import a from "x";
 import c from "x";
 import b from "y";
 import d from "y";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE,
-    );
+    const result = sortImports(code, parser, ONE_BUCKET_NATURALLY_BY_MODULE_AND_MEMBER_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -736,16 +679,11 @@ import d from "y";
   });
 });
 
-const ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE: IStyle = (
-  styleApi: IStyleAPI,
-): Array<IStyleItem> => {
+const ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE: IStyle = (styleApi: IStyleAPI): Array<IStyleItem> => {
   const items: Array<IStyleItem> = [
     {
       match: styleApi.always,
-      sort: [
-        styleApi.moduleName(styleApi.naturally),
-        styleApi.member(styleApi.naturally),
-      ],
+      sort: [styleApi.moduleName(styleApi.naturally), styleApi.member(styleApi.naturally)],
       sortNamedMembers: styleApi.name(styleApi.naturally),
     },
   ];
@@ -753,23 +691,19 @@ const ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE: IStyle = (
   return items;
 };
 
-describe("sortImports (babylon, ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE)", () => {
-  it("should sort named members", () => {
+describe('sortImports (babylon, ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE)', () => {
+  it('should sort named members', () => {
     const code =
       `
 import {c, b, a} from "x";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
 import {a, b, c} from "x";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE,
-    );
+    const result = sortImports(code, parser, ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE);
 
     const actual = result.code;
     const changes = result.changes;
@@ -778,7 +712,7 @@ import {a, b, c} from "x";
     assert.equal(applyChanges(code, changes), expected);
   });
 
-  it("should sort named members", () => {
+  it('should sort named members', () => {
     const code =
       `
 import {
@@ -786,7 +720,7 @@ import {
   b,
   a
 } from "x";
-`.trim() + "\n";
+`.trim() + '\n';
 
     const expected =
       `
@@ -795,13 +729,9 @@ import {
   b,
   c
 } from "x";
-`.trim() + "\n";
+`.trim() + '\n';
 
-    const result = sortImports(
-      code,
-      parser,
-      ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE,
-    );
+    const result = sortImports(code, parser, ONE_BUCKET_NATURAL_NAMED_MEMBERS_STYLE);
 
     const actual = result.code;
     const changes = result.changes;

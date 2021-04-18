@@ -1,4 +1,4 @@
-import {IImport, NamedMember} from "import-sort-parser";
+import { IImport, NamedMember } from 'forked-import-sort-parser';
 
 export interface IStyleAPI {
   member: ISelectorFunction;

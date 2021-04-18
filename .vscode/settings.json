@@ -1,0 +1,7 @@
+{
+  "sort-imports.default-sort-style": "module-tsconfig",
+  "sort-imports.languages": [
+    "javascript",
+    "typescript"
+  ]
+}

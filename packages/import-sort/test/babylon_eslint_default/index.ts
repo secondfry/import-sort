@@ -1,27 +1,42 @@
-import "mocha";
-import {assert} from "chai";
+import 'mocha';
 
-import * as parser from "import-sort-parser-babylon";
-import style from "import-sort-style-eslint";
-import {sortImports} from "../../src";
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-import {CLIEngine} from "eslint";
-import {readFileSync} from "fs";
-import {join} from "path";
+import { assert } from 'chai';
+import { ESLint } from 'eslint';
+import * as parser from 'forked-import-sort-parser-babylon';
+import style from 'forked-import-sort-style-eslint';
 
-describe("sortImports (babylon, eslint)", () => {
-  it("should have no errors", () => {
-    const file = join(__dirname, "babylon_eslint.js.test");
-    const code = readFileSync(file, "utf-8");
+import { sortImports } from '../../src';
+
+describe('sortImports (babylon, eslint)', () => {
+  it('should have no errors', async () => {
+    const file = join(__dirname, 'babylon_eslint.js.test');
+    const code = readFileSync(file, 'utf-8');
 
     const result = sortImports(code, parser, style, file);
 
-    const cli = new CLIEngine({
-      pwd: __dirname,
+    const cli = new ESLint({
+      cwd: __dirname,
+      baseConfig: {
+        parserOptions: {
+          sourceType: 'module',
+          ecmaVersion: 2015,
+        },
+        rules: {
+          'sort-imports': [2, { ignoreCase: false }],
+        },
+      },
+      useEslintrc: false,
     });
 
-    const report = cli.executeOnText(result.code, file);
+    const results = await cli.lintText(result.code, {
+      filePath: file,
+    });
 
-    assert.equal(report.errorCount, 0);
+    const errors = results.reduce((acc, res) => acc + res.errorCount, 0);
+
+    assert.equal(errors, 0);
   });
 });

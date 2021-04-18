@@ -1,51 +1,43 @@
-import {extname} from "path";
+import { extname } from 'path';
 
 import {
   loadOptions as babelLoadOptions,
   loadPartialConfig as babelLoadPartialOptions,
   parse as babelParse,
-} from "@babel/core";
-import {ParserOptions, parse as babelParserParse} from "@babel/parser";
-import traverse from "@babel/traverse";
-import {
-  isImportDefaultSpecifier,
-  isImportNamespaceSpecifier,
-  isImportSpecifier,
-} from "@babel/types";
-// tslint:disable-next-line:no-implicit-dependencies
-import {IImport, IParserOptions, NamedMember} from "import-sort-parser";
+} from '@babel/core';
+import { ParserOptions, parse as babelParserParse } from '@babel/parser';
+import traverse from '@babel/traverse';
+import { isImportDefaultSpecifier, isImportNamespaceSpecifier, isImportSpecifier } from '@babel/types';
+import findLineColumn from 'find-line-column';
+import { IImport, IParserOptions, NamedMember } from 'forked-import-sort-parser';
 
-// TODO: Mocha currently doesn't pick up the declaration in index.d.ts
-// eslint-disable-next-line
-const findLineColumn = require("find-line-column");
-
-const TYPESCRIPT_EXTENSIONS = [".ts", ".tsx"];
+const TYPESCRIPT_EXTENSIONS = ['.ts', '.tsx'];
 
 const COMMON_PARSER_PLUGINS = [
-  "jsx",
-  "doExpressions",
-  "objectRestSpread",
-  ["decorators", {decoratorsBeforeExport: true}],
-  "classProperties",
-  "classPrivateProperties",
-  "classPrivateMethods",
-  "exportDefaultFrom",
-  "exportNamespaceFrom",
-  "asyncGenerators",
-  "functionBind",
-  "functionSent",
-  "dynamicImport",
-  "numericSeparator",
-  "optionalChaining",
-  "importMeta",
-  "bigInt",
-  "optionalCatchBinding",
-  "throwExpressions",
-  ["pipelineOperator", {proposal: "minimal"}],
-  "nullishCoalescingOperator",
+  'jsx',
+  'doExpressions',
+  'objectRestSpread',
+  ['decorators', { decoratorsBeforeExport: true }],
+  'classProperties',
+  'classPrivateProperties',
+  'classPrivateMethods',
+  'exportDefaultFrom',
+  'exportNamespaceFrom',
+  'asyncGenerators',
+  'functionBind',
+  'functionSent',
+  'dynamicImport',
+  'numericSeparator',
+  'optionalChaining',
+  'importMeta',
+  'bigInt',
+  'optionalCatchBinding',
+  'throwExpressions',
+  ['pipelineOperator', { proposal: 'minimal' }],
+  'nullishCoalescingOperator',
 ];
 
-const FLOW_PARSER_PLUGINS = ["flow", "flowComments", ...COMMON_PARSER_PLUGINS];
+const FLOW_PARSER_PLUGINS = ['flow', 'flowComments', ...COMMON_PARSER_PLUGINS];
 
 const FLOW_PARSER_OPTIONS = {
   allowImportExportEverywhere: true,
@@ -53,12 +45,12 @@ const FLOW_PARSER_OPTIONS = {
   allowReturnOutsideFunction: true,
   allowSuperOutsideMethod: true,
 
-  sourceType: "module",
+  sourceType: 'module',
 
   plugins: FLOW_PARSER_PLUGINS,
 };
 
-const TYPESCRIPT_PARSER_PLUGINS = ["typescript", ...COMMON_PARSER_PLUGINS];
+const TYPESCRIPT_PARSER_PLUGINS = ['typescript', ...COMMON_PARSER_PLUGINS];
 
 const TYPESCRIPT_PARSER_OPTIONS = {
   allowImportExportEverywhere: true,
@@ -66,41 +58,33 @@ const TYPESCRIPT_PARSER_OPTIONS = {
   allowReturnOutsideFunction: true,
   allowSuperOutsideMethod: true,
 
-  sourceType: "module",
+  sourceType: 'module',
 
   plugins: TYPESCRIPT_PARSER_PLUGINS,
 };
 
-export function parseImports(
-  code: string,
-  options: IParserOptions = {},
-): IImport[] {
-  const babelPartialOptions = babelLoadPartialOptions({filename: options.file});
+export function parseImports(code: string, options: IParserOptions = {}): IImport[] {
+  const babelPartialOptions = babelLoadPartialOptions({ filename: options.file });
 
   let parsed;
 
   if (babelPartialOptions.hasFilesystemConfig()) {
     // We always prefer .babelrc (or similar) if one was found
-    parsed = babelParse(code, babelLoadOptions({filename: options.file}));
+    parsed = babelParse(code, babelLoadOptions({ filename: options.file }));
   } else {
-    const {file} = options;
+    const { file } = options;
 
     const isTypeScript = file && TYPESCRIPT_EXTENSIONS.includes(extname(file));
 
-    const parserOptions = isTypeScript
-      ? TYPESCRIPT_PARSER_OPTIONS
-      : FLOW_PARSER_OPTIONS;
+    const parserOptions = isTypeScript ? TYPESCRIPT_PARSER_OPTIONS : FLOW_PARSER_OPTIONS;
 
-    parsed = babelParserParse(
-      code,
-      (parserOptions as unknown) as ParserOptions,
-    );
+    parsed = babelParserParse(code, (parserOptions as unknown) as ParserOptions);
   }
 
   const imports: IImport[] = [];
 
-  const ignore = (parsed.comments || []).some(comment => {
-    return comment.value.includes("import-sort-ignore");
+  const ignore = (parsed.comments || []).some((comment) => {
+    return comment.value.includes('import-sort-ignore');
   });
 
   if (ignore) {
@@ -109,7 +93,7 @@ export function parseImports(
 
   traverse(parsed, {
     ImportDeclaration(path) {
-      const {node} = path;
+      const { node } = path;
 
       const importStart = node.start;
       const importEnd = node.end;
@@ -124,11 +108,7 @@ export function parseImports(
         let previous: number | undefined;
 
         while (comments[current] && comments[current].end + 1 === start) {
-          if (
-            code
-              .substring(comments[current].start, comments[current].end)
-              .indexOf("#!") === 0
-          ) {
+          if (code.substring(comments[current].start, comments[current].end).indexOf('#!') === 0) {
             break;
           }
 
@@ -138,7 +118,7 @@ export function parseImports(
           }
 
           previous = current;
-          ({start} = comments[previous]);
+          ({ start } = comments[previous]);
           current -= 1;
         }
       }
@@ -155,7 +135,7 @@ export function parseImports(
           }
 
           previous = current;
-          ({end} = comments[previous]);
+          ({ end } = comments[previous]);
           current += 1;
         }
       }
@@ -169,23 +149,23 @@ export function parseImports(
 
         moduleName: node.source.value,
 
-        type: node.importKind === "type" ? "import-type" : "import",
+        type: node.importKind === 'type' ? 'import-type' : 'import',
         namedMembers: [],
       };
 
       if (node.specifiers) {
-        node.specifiers.forEach(specifier => {
+        node.specifiers.forEach((specifier) => {
           if (isImportSpecifier(specifier)) {
-            const type = specifier.importKind === "type" ? {type: true} : {};
+            const type = specifier.importKind === 'type' ? { type: true } : {};
 
             imported.namedMembers.push({
-              name: specifier.imported.name,
+              name: specifier.imported.type === 'Identifier' ? specifier.imported.name : specifier.imported.value,
               alias: specifier.local.name,
               ...type,
             });
           } else if (isImportDefaultSpecifier(specifier)) {
             imported.defaultMember = specifier.local.name;
-          } else if (isImportNamespaceSpecifier) {
+          } else if (isImportNamespaceSpecifier(specifier)) {
             imported.namespaceMember = specifier.local.name;
           }
         });
@@ -198,52 +178,33 @@ export function parseImports(
   return imports;
 }
 
-export function formatImport(
-  code: string,
-  imported: IImport,
-  eol = "\n",
-): string {
+export function formatImport(code: string, imported: IImport, eol = '\n'): string {
   const importStart = imported.importStart || imported.start;
   const importEnd = imported.importEnd || imported.end;
 
   const importCode = code.substring(importStart, importEnd);
 
-  const {namedMembers} = imported;
+  const { namedMembers } = imported;
 
   if (namedMembers.length === 0) {
     return code.substring(imported.start, imported.end);
   }
 
-  const newImportCode = importCode.replace(
-    /\{[\s\S]*\}/g,
-    namedMembersString => {
-      const useMultipleLines = namedMembersString.indexOf(eol) !== -1;
+  const newImportCode = importCode.replace(/\{[\s\S]*\}/g, (namedMembersString) => {
+    const useMultipleLines = namedMembersString.indexOf(eol) !== -1;
 
-      let prefix: string | undefined;
+    let prefix: string | undefined;
 
-      if (useMultipleLines) {
-        [prefix] = namedMembersString
-          .split(eol)[1]
-          .match(/^\s*/) as RegExpMatchArray;
-      }
+    if (useMultipleLines) {
+      [prefix] = namedMembersString.split(eol)[1].match(/^\s*/) as RegExpMatchArray;
+    }
 
-      const useSpaces = namedMembersString.charAt(1) === " ";
+    const useSpaces = namedMembersString.charAt(1) === ' ';
 
-      const userTrailingComma = namedMembersString
-        .replace("}", "")
-        .trim()
-        .endsWith(",");
+    const userTrailingComma = namedMembersString.replace('}', '').trim().endsWith(',');
 
-      return formatNamedMembers(
-        namedMembers,
-        useMultipleLines,
-        useSpaces,
-        userTrailingComma,
-        prefix,
-        eol,
-      );
-    },
-  );
+    return formatNamedMembers(namedMembers, useMultipleLines, useSpaces, userTrailingComma, prefix, eol);
+  });
 
   return (
     code.substring(imported.start, importStart) +
@@ -258,17 +219,17 @@ function formatNamedMembers(
   useSpaces: boolean,
   useTrailingComma: boolean,
   prefix: string | undefined,
-  eol = "\n",
+  eol = '\n'
 ): string {
   if (useMultipleLines) {
     return (
-      "{" +
+      '{' +
       eol +
       namedMembers
-        .map(({name, alias, type}, index) => {
+        .map(({ name, alias, type }, index) => {
           const lastImport = index === namedMembers.length - 1;
-          const comma = !useTrailingComma && lastImport ? "" : ",";
-          const typeModifier = type ? "type " : "";
+          const comma = !useTrailingComma && lastImport ? '' : ',';
+          const typeModifier = type ? 'type ' : '';
 
           if (name === alias) {
             return `${prefix}${typeModifier}${name}${comma}` + eol;
@@ -276,20 +237,20 @@ function formatNamedMembers(
 
           return `${prefix}${typeModifier}${name} as ${alias}${comma}` + eol;
         })
-        .join("") +
-      "}"
+        .join('') +
+      '}'
     );
   }
 
-  const space = useSpaces ? " " : "";
-  const comma = useTrailingComma ? "," : "";
+  const space = useSpaces ? ' ' : '';
+  const comma = useTrailingComma ? ',' : '';
 
   return (
-    "{" +
+    '{' +
     space +
     namedMembers
-      .map(({name, alias, type}) => {
-        const typeModifier = type ? "type " : "";
+      .map(({ name, alias, type }) => {
+        const typeModifier = type ? 'type ' : '';
 
         if (name === alias) {
           return `${typeModifier}${name}`;
@@ -297,9 +258,9 @@ function formatNamedMembers(
 
         return `${typeModifier}${name} as ${alias}`;
       })
-      .join(", ") +
+      .join(', ') +
     comma +
     space +
-    "}"
+    '}'
   );
 }

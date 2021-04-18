@@ -23,7 +23,7 @@ export interface IImport {
   namedMembers: NamedMember[];
 }
 
-export type ImportType = "import" | "require" | "import-equals" | "import-type";
+export type ImportType = 'import' | 'require' | 'import-equals' | 'import-type';
 
 export interface NamedMember {
   name: string;

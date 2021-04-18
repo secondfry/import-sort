@@ -1,29 +1,28 @@
 {
-  "name": "import-sort-playground",
+  "name": "forked-import-sort-playground",
   "private": true,
-  "version": "6.0.0",
+  "version": "7.0.3",
   "description": "",
   "main": "index.js",
-  "author": "Renke Grunwald <renke@renke.org> (https://github.com/renke)",
-  "repository": "renke/import-sort",
+  "author": "Rustam SecondFry Gubaydullin <secondfry+npm@gmail.com> (https://github.com/secondfry)",
+  "contributors": [
+    "Renke Grunwald <renke@renke.org> (https://github.com/renke)"
+  ],
+  "repository": "github:secondfry/import-sort",
   "license": "ISC",
   "dependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.0.0",
-    "import-sort-parser-babylon": "^6.0.0",
-    "import-sort-parser-typescript": "^6.0.0",
-    "import-sort-style-eslint": "^6.0.0",
-    "import-sort-style-module": "^6.0.0",
-    "import-sort-style-renke": "^6.0.0",
-    "typescript": "^3.2.4"
+    "forked-import-sort-parser-babylon": "^7.0.3",
+    "forked-import-sort-parser-typescript": "^7.0.3",
+    "forked-import-sort-style-eslint": "^7.0.3",
+    "forked-import-sort-style-module": "^7.0.3",
+    "forked-import-sort-style-renke": "^7.0.3"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^1.2.0",
-    "eslint": "^5.13.0",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jsx-a11y": "^6.2.0",
-    "eslint-plugin-react": "^7.12.4"
+    "@babel/eslint-parser": "^7.13.14",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "typescript": "^4.2.4"
   }
 }

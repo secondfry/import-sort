@@ -1,4 +1,4 @@
-declare module "find-root" {
+declare module 'find-root' {
   function findRoot(startingPath: string): string;
   export = findRoot;
 }

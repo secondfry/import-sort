@@ -1,12 +1,8 @@
-import * as detectNewline from "detect-newline";
-import {IImport, IParser, NamedMember} from "import-sort-parser";
-import {
-  INamedMemberSorterFunction,
-  ISorterFunction,
-  IStyle,
-} from "import-sort-style";
+import * as detectNewline from 'detect-newline';
+import { IImport, IParser, NamedMember } from 'forked-import-sort-parser';
+import { INamedMemberSorterFunction, ISorterFunction, IStyle } from 'forked-import-sort-style';
 
-import StyleAPI from "./style/StyleAPI";
+import StyleAPI from './style/StyleAPI';
 
 export interface ISortResult {
   code: string;
@@ -25,19 +21,16 @@ export default function importSort(
   rawParser: string | IParser,
   rawStyle: string | IStyle,
   file?: string,
-  options?: object,
+  options?: Record<string, unknown>
 ): ISortResult {
   let style: IStyle;
 
-  const parser: IParser =
-    typeof rawParser === "string" ? require(rawParser) : (rawParser as IParser);
+  const parser: IParser = typeof rawParser === 'string' ? require(rawParser) : (rawParser as IParser);
 
-  if (typeof rawStyle === "string") {
+  if (typeof rawStyle === 'string') {
     style = require(rawStyle);
 
-    // eslint-disable-next-line
     if ((style as any).default) {
-      // eslint-disable-next-line
       style = (style as any).default;
     }
   } else {
@@ -52,9 +45,8 @@ export function sortImports(
   parser: IParser,
   style: IStyle,
   file?: string,
-  options?: object,
+  options?: Record<string, unknown>
 ): ISortResult {
-  // eslint-disable-next-line
   const items = addFallback(style, file, options || {})(StyleAPI);
 
   const buckets: IImport[][] = items.map(() => []);
@@ -64,7 +56,7 @@ export function sortImports(
   });
 
   if (imports.length === 0) {
-    return {code, changes: []};
+    return { code, changes: [] };
   }
 
   const eol = detectNewline.graceful(code);
@@ -75,8 +67,7 @@ export function sortImports(
   for (const imported of imports) {
     let sortedImport = imported;
 
-    const index = items.findIndex(item => {
-      // eslint-disable-next-line
+    const index = items.findIndex((item) => {
       sortedImport = sortNamedMembers(imported, item.sortNamedMembers);
       return !!item.match && item.match(sortedImport);
     });
@@ -88,7 +79,7 @@ export function sortImports(
 
   // Sort buckets
   buckets.forEach((bucket, index) => {
-    const {sort} = items[index];
+    const { sort } = items[index];
 
     if (!sort) {
       return;
@@ -120,7 +111,7 @@ export function sortImports(
     bucket.sort(multiSort);
   });
 
-  let importsCode = "";
+  let importsCode = '';
 
   // Track if we need to insert a separator
   let separator = false;
@@ -131,14 +122,14 @@ export function sortImports(
       separator = false;
     }
 
-    bucket.forEach(imported => {
+    bucket.forEach((imported) => {
       // const sortedImport = sortNamedMembers(imported, items[index].sortNamedMembers);
       const importString = parser.formatImport(code, imported, eol);
       importsCode += importString + eol;
     });
 
     // Add separator but only when at least one import was already added
-    if (items[index].separator && importsCode !== "") {
+    if (items[index].separator && importsCode !== '') {
       separator = true;
     }
   });
@@ -149,7 +140,7 @@ export function sortImports(
   imports
     .slice()
     .reverse()
-    .forEach(imported => {
+    .forEach((imported) => {
       let importEnd = imported.end;
 
       if (sortedCode.charAt(imported.end).match(/\s/)) {
@@ -159,16 +150,14 @@ export function sortImports(
       changes.push({
         start: imported.start,
         end: importEnd,
-        code: "",
-        note: "import-remove",
+        code: '',
+        note: 'import-remove',
       });
 
-      sortedCode =
-        sortedCode.slice(0, imported.start) +
-        sortedCode.slice(importEnd, code.length);
+      sortedCode = sortedCode.slice(0, imported.start) + sortedCode.slice(importEnd, code.length);
     });
 
-  const {start} = imports[0];
+  const { start } = imports[0];
 
   // Split code at first original import
   let before = code.substring(0, start);
@@ -181,24 +170,24 @@ export function sortImports(
   let afterChange: ICodeChange | undefined;
 
   // Collapse all whitespace into a single blank line
-  before = before.replace(/\s+$/, match => {
+  before = before.replace(/\s+$/, (match) => {
     beforeChange = {
       start: start - match.length,
       end: start,
       code: eol + eol,
-      note: "before-collapse",
+      note: 'before-collapse',
     };
 
     return eol + eol;
   });
 
   // Collapse all whitespace into a single new line
-  after = after.replace(/^\s+/, match => {
+  after = after.replace(/^\s+/, (match) => {
     afterChange = {
       start,
       end: start + match.length,
       code: eol,
-      note: "after-collapse",
+      note: 'after-collapse',
     };
 
     return eol;
@@ -209,11 +198,11 @@ export function sortImports(
     beforeChange = {
       start: start - oldBeforeLength,
       end: start,
-      code: "",
-      note: "before-trim",
+      code: '',
+      note: 'before-trim',
     };
 
-    before = "";
+    before = '';
   }
 
   // Remove all whitespace at the end of the code
@@ -221,11 +210,11 @@ export function sortImports(
     afterChange = {
       start,
       end: start + oldAfterLength,
-      code: "",
-      note: "after-trim",
+      code: '',
+      note: 'after-trim',
     };
 
-    after = "";
+    after = '';
   }
 
   if (afterChange) {
@@ -240,13 +229,13 @@ export function sortImports(
     start: before.length,
     end: before.length,
     code: importsCode,
-    note: "imports",
+    note: 'imports',
   };
 
   changes.push(change);
 
   if (code === before + importsCode + after) {
-    return {code, changes: []};
+    return { code, changes: [] };
   }
 
   return {
@@ -257,7 +246,7 @@ export function sortImports(
 
 function sortNamedMembers(
   imported: IImport,
-  rawSort?: INamedMemberSorterFunction | INamedMemberSorterFunction[],
+  rawSort?: INamedMemberSorterFunction | INamedMemberSorterFunction[]
 ): IImport {
   const sort = rawSort;
 
@@ -266,11 +255,9 @@ function sortNamedMembers(
   }
 
   if (!Array.isArray(sort)) {
-    const singleSortedImport = {...imported};
+    const singleSortedImport = { ...imported };
 
-    singleSortedImport.namedMembers = [...imported.namedMembers].sort(
-      sort as INamedMemberSorterFunction,
-    );
+    singleSortedImport.namedMembers = [...imported.namedMembers].sort(sort as INamedMemberSorterFunction);
 
     return singleSortedImport;
   }
@@ -293,7 +280,7 @@ function sortNamedMembers(
     return comparison;
   };
 
-  const sortedImport = {...imported};
+  const sortedImport = { ...imported };
   sortedImport.namedMembers = [...imported.namedMembers].sort(multiSort);
 
   return sortedImport;
@@ -303,18 +290,15 @@ export function applyChanges(code: string, changes: ICodeChange[]): string {
   let changedCode = code;
 
   for (const change of changes) {
-    changedCode =
-      changedCode.slice(0, change.start) +
-      change.code +
-      changedCode.slice(change.end, changedCode.length);
+    changedCode = changedCode.slice(0, change.start) + change.code + changedCode.slice(change.end, changedCode.length);
   }
 
   return changedCode;
 }
 
-function addFallback(style: IStyle, file?: string, options?: object): IStyle {
-  return styleApi => {
-    const items = [{separator: true}, {match: styleApi.always}];
+function addFallback(style: IStyle, file?: string, options?: Record<string, unknown>): IStyle {
+  return (styleApi) => {
+    const items = [{ separator: true }, { match: styleApi.always }];
 
     return style(styleApi, file, options).concat(items);
   };

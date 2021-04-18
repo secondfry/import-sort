@@ -1,6 +1,6 @@
-import * as cosmiconfig from "cosmiconfig";
-import * as minimatch from "minimatch";
-import {silent as resolve} from "resolve-from";
+import { cosmiconfigSync } from 'cosmiconfig';
+import * as minimatch from 'minimatch';
+import { silent as resolve } from 'resolve-from';
 
 export interface IConfigByGlobs {
   [globs: string]: IConfig;
@@ -9,7 +9,7 @@ export interface IConfigByGlobs {
 export interface IConfig {
   parser?: string;
   style?: string;
-  options?: object;
+  options?: Record<string, unknown>;
 }
 
 export interface IResolvedConfig {
@@ -20,16 +20,16 @@ export interface IResolvedConfig {
 }
 
 export const DEFAULT_CONFIGS: IConfigByGlobs = {
-  ".js, .jsx, .es6, .es, .mjs, .ts, .tsx": {
-    parser: "babylon",
-    style: "eslint",
+  '.js, .jsx, .es6, .es, .mjs, .ts, .tsx': {
+    parser: 'babylon',
+    style: 'eslint',
   },
 };
 
 export function getConfig(
   extension: string,
   directory?: string,
-  defaultConfigs = DEFAULT_CONFIGS,
+  defaultConfigs = DEFAULT_CONFIGS
 ): IResolvedConfig | undefined {
   const defaultConfig = getConfigForExtension(defaultConfigs, extension);
   let packageConfig: IConfig | undefined;
@@ -49,10 +49,7 @@ export function getConfig(
   return resolvedConfig;
 }
 
-function getConfigFromDirectory(
-  directory: string,
-  extension: string,
-): IConfig | undefined {
+function getConfigFromDirectory(directory: string, extension: string): IConfig | undefined {
   const packageConfigs = getAllConfigsFromDirectory(directory);
 
   if (!packageConfigs) {
@@ -62,37 +59,28 @@ function getConfigFromDirectory(
   return getConfigForExtension(packageConfigs, extension);
 }
 
-function getConfigForExtension(
-  configs: IConfigByGlobs,
-  extension: string,
-): IConfig | undefined {
-  const foundConfigs: (IConfig | undefined)[] = Object.keys(configs).map(
-    joinedGlobs => {
-      const globs = joinedGlobs.split(",").map(rawGlob => rawGlob.trim());
-      const config = configs[joinedGlobs];
+function getConfigForExtension(configs: IConfigByGlobs, extension: string): IConfig | undefined {
+  const foundConfigs: (IConfig | undefined)[] = Object.keys(configs).map((joinedGlobs) => {
+    const globs = joinedGlobs.split(',').map((rawGlob) => rawGlob.trim());
+    const config = configs[joinedGlobs];
 
-      if (globs.some(glob => minimatch(extension, glob))) {
-        return config;
-      }
+    if (globs.some((glob) => minimatch(extension, glob))) {
+      return config;
+    }
 
-      return undefined;
-    },
-  );
+    return undefined;
+  });
 
   return mergeConfigs(foundConfigs);
 }
 
-function getAllConfigsFromDirectory(
-  directory: string,
-): IConfigByGlobs | undefined {
-  const configsLoader = cosmiconfig("importsort", {
-    sync: true,
-    packageProp: "importSort",
-    rcExtensions: true,
+function getAllConfigsFromDirectory(directory: string): IConfigByGlobs | undefined {
+  const configsLoader = cosmiconfigSync('importsort', {
+    packageProp: 'importSort',
   });
 
   try {
-    const configsResult = configsLoader.searchSync(directory);
+    const configsResult = configsLoader.search(directory);
 
     if (!configsResult) {
       return undefined;
@@ -106,10 +94,8 @@ function getAllConfigsFromDirectory(
   return undefined;
 }
 
-function mergeConfigs(
-  rawConfigs: (IConfig | undefined)[],
-): IConfig | undefined {
-  const configs = rawConfigs.filter(rawConfig => !!rawConfig) as IConfig[];
+function mergeConfigs(rawConfigs: (IConfig | undefined)[]): IConfig | undefined {
+  const configs = rawConfigs.filter((rawConfig) => !!rawConfig) as IConfig[];
 
   if (configs.length === 0) {
     return undefined;
@@ -120,7 +106,7 @@ function mergeConfigs(
       return previousConfig;
     }
 
-    const config = {...previousConfig};
+    const config = { ...previousConfig };
 
     if (currentConfig.parser) {
       config.parser = currentConfig.parser;
@@ -156,6 +142,7 @@ function resolveConfig(config: IConfig, directory?: string): IResolvedConfig {
 
 function resolveParser(module: string, directory?: string) {
   return (
+    resolveModule(`forked-import-sort-parser-${module}`, directory) ||
     resolveModule(`import-sort-parser-${module}`, directory) ||
     resolveModule(module, directory)
   );
@@ -163,6 +150,7 @@ function resolveParser(module: string, directory?: string) {
 
 function resolveStyle(module: string, directory?: string) {
   return (
+    resolveModule(`forked-import-sort-style-${module}`, directory) ||
     resolveModule(`import-sort-style-${module}`, directory) ||
     resolveModule(module, directory)
   );

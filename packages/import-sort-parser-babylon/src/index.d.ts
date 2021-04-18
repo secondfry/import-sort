@@ -1,7 +1,7 @@
-declare module "find-line-column" {
+declare module 'find-line-column' {
   export default function findLineColumn(
     text: string,
-    offset: number,
+    offset: number
   ): {
     line: number;
     column: number;

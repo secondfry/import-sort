@@ -1,9 +1,9 @@
 {
   "parserOptions": {
     "sourceType": "module",
+    "ecmaVersion": 2015
   },
-
   "rules": {
     "sort-imports": [2, {"ignoreCase": false}],
-  },
+  }
 }
