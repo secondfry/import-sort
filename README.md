@@ -1,7 +1,22 @@
-# import-sort
+# forked-import-sort
 
-`import-sort` is a set of packages that allow you to sort your ES2015 (aka ES6)
+`forked-import-sort` is a set of packages that allow you to sort your ES2015 (aka ES6)
 imports. Both JavaScript and TypeScript files are supported.
+
+- [forked-import-sort](#forked-import-sort)
+- [Sorting imports](#sorting-imports)
+  - [Visual Studio Code (vsc-sort-imports)](#visual-studio-code-vsc-sort-imports)
+  - [Atom (atom-import-sort)](#atom-atom-import-sort)
+  - [Vim (vim-sort-imports)](#vim-vim-sort-imports)
+- [JetBrains IDEs](#jetbrains-ides)
+  - [Command Line (import-sort-cli)](#command-line-import-sort-cli)
+  - [Node.js (import-sort)](#nodejs-import-sort)
+- [Ignoring files](#ignoring-files)
+- [Dealing with comments](#dealing-with-comments)
+- [Using a different style or parser](#using-a-different-style-or-parser)
+- [Writing you own custom style](#writing-you-own-custom-style)
+- [Feedback](#feedback)
+- [License](#license)
 
 # Sorting imports
 
@@ -16,23 +31,18 @@ suits you most.
 
 ## Visual Studio Code (vsc-sort-imports)
 
-Sort your imports directy from within
-[Visual Studio Code](https://code.visualstudio.com/).
+Sort your imports directy from within [Visual Studio Code][vscode].
 
-See
-[sort-imports](https://marketplace.visualstudio.com/items?itemName=amatiasq.sort-imports)
-in the Visual Studio Marketplace for more details.
+See [sort-imports][vsc-sort-imports] in the Visual Studio Marketplace for more details.
 
-This extension was originally developed by
-[Peter Juras](https://github.com/peterjuras) and is currently maintained by
-[A. Matías Quezada](https://github.com/amatiasq). Thank you very much!
+This extension was originally developed by [Peter Juras][peterjuras] and
+is currently maintained by [A. Matías Quezada][amatiasq]. Thank you very much!
 
 ## Atom (atom-import-sort)
 
-Sort your imports directly from within [Atom](https://atom.io/). Go to
-[package](https://atom.io/packages/atom-import-sort) or install it directly with
-`apm install atom-import-sort`. The plugin can sort imports in both JavaScript
-and TypeScript.
+Sort your imports directly from within [Atom][atom]. Go to [package][atom-package]
+or install it directly with `apm install atom-import-sort`. The plugin can sort
+imports in both JavaScript and TypeScript.
 
 After you installed the package you can sort your imports using the
 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>o</kbd> key binding or trigger it
@@ -44,18 +54,15 @@ default.
 
 ## Vim (vim-sort-imports)
 
-Sort your imports directy from within Vim. See
-[vim-sort-imports](https://github.com/ruanyl/vim-sort-imports) for more details
-about the configuration.
+Sort your imports directy from within Vim. See [vim-sort-imports][vim-sort-imports]
+for more details about the configuration.
 
 # JetBrains IDEs
 
-To use import-sort in any of the JetBrains IDEs follow the instructions regarding File Watcher in the
-[prettier documentation](https://prettier.io/docs/en/webstorm.html) and replace `prettier` with `import-sort`.
+To use import-sort in any of the JetBrains IDEs follow the instructions regarding File Watcher in the [prettier documentation][prettier-webstorm] and replace `prettier` with `import-sort`.
 
-Alternatively, just install the [File Watcher plugin](https://plugins.jetbrains.com/plugin/7177-file-watchers) and try
-to import the following
-[File Watcher configuration](https://gist.githubusercontent.com/renke/f08c6022a01a1465b025f83b82b3b028/raw/3eb3fd5f7dd6fc67f145c6a27ff1db6eb64c27bb/watchers.xml).
+Alternatively, just install the [File Watcher plugin][file-watcher-plugin] and try
+to import the following [File Watcher configuration][file-watcher-plugin-configuration].
 
 ## Command Line (import-sort-cli)
 
@@ -66,9 +73,8 @@ Install it with `npm install --save-dev import-sort-cli` or use it directly with
 `npx import-sort-cli`.
 
 _ATTENTION_: Since version 4 `--write` modifies file in-place. The old
-`--overwrite` flag was removed. The CLI now behaves closer to
-[prettier's](https://github.com/prettier/prettier) CLI. Also, the exit code is
-now 0 even when unsorted were sorted (unless `--list-different` is used.)
+`--overwrite` flag was removed. The CLI now behaves closer to [prettier's][prettier] CLI.
+Also, the exit code is now 0 even when unsorted were sorted (unless `--list-different` is used.)
 
 ```
 Usage: import-sort [OPTION]... [FILE/GLOB]...
@@ -83,7 +89,7 @@ Options:
 
 ## Node.js (import-sort)
 
-Sort your imports via [Node.js](https://nodejs.org/). For more information take
+Sort your imports via [Node.js][nodejs]. For more information take
 a look at the code of the `import-sort-cli` package.
 
 To use it you probably want to install `import-sort`, `import-sort-config`, a
@@ -158,8 +164,7 @@ should be used for files that have any of the listed file extensions.
 
 Instead of putting your configuration into your `package.json` you can also use
 a `.importsortrc` file written in JSON. For more details see
-[cosmiconfig](https://github.com/davidtheclark/cosmiconfig) which is used
-internally by `import-sort`.
+[cosmiconfig][cosmiconfig] which is used internally by `import-sort`.
 
 By default, `import-sort` comes with these styles:
 
@@ -196,3 +201,17 @@ Thanks!
 # License
 
 See [LICENSE](LICENSE).
+
+[vscode]: https://code.visualstudio.com/
+[vsc-sort-imports]: (https://marketplace.visualstudio.com/items?itemName=amatiasq.sort-imports)
+[peterjuras]: https://github.com/peterjuras
+[amatiasq]: https://github.com/amatiasq
+[atom]: https://atom.io/
+[atom-package]: https://atom.io/packages/atom-import-sort
+[vim-sort-imports]: https://github.com/ruanyl/vim-sort-imports
+[prettier-webstorm]: https://prettier.io/docs/en/webstorm.html
+[file-watcher-plugin]: https://plugins.jetbrains.com/plugin/7177-file-watchers
+[file-watcher-plugin-configuration]: https://gist.githubusercontent.com/renke/f08c6022a01a1465b025f83b82b3b028/raw/3eb3fd5f7dd6fc67f145c6a27ff1db6eb64c27bb/watchers.xml
+[prettier]: https://github.com/prettier/prettier
+[nodejs]: https://nodejs.org/
+[cosmiconfig]: https://github.com/davidtheclark/cosmiconfig

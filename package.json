@@ -6,7 +6,8 @@
     "clean:build": "lerna exec -- rimraf lib",
     "test": "mocha --require ts-node/register --recursive \"packages/*/test/**/*.ts\"",
     "test:watch": "mocha -w --require ts-node/register --recursive \"packages/*/test/**/*.ts\"",
-    "lint": "eslint --ext ts packages/*/src"
+    "lint": "eslint --ext ts packages/*/src",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.ts": [
