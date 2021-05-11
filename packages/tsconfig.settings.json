@@ -1,20 +1,10 @@
 {
-  "compileOnSave": false,
+  "extends": "@tsconfig/node12/tsconfig.json",
 
   "compilerOptions": {
-    "target": "es2019",
-
-    "declaration": true,
+    "composite": true,
     "declarationMap": true,
 
-    "module": "commonjs",
-    "moduleResolution": "node",
-
-    "strictNullChecks": true,
-
     "baseUrl": "./packages",
-    "composite": true,
-
-    "lib": ["es2019"]
   }
 }

@@ -11,7 +11,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "forked-import-sort-cli --write",
+      "import-sort --write",
       "prettier --write",
       "eslint --fix",
       "git add"
@@ -27,6 +27,7 @@
     ]
   },
   "devDependencies": {
+    "@tsconfig/node12": "^1.0.7",
     "@types/chai": "^4.2.16",
     "@types/mocha": "^8.2.2",
     "@types/node": "^12.20.10",
@@ -37,7 +38,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
-    "forked-import-sort-cli": "file:packages/import-sort-cli",
+    "forked-import-sort-cli": "^7.0.4",
     "husky": "^6.0.0",
     "import-sort-style-module-tsconfig": "^1.2.1",
     "lerna": "^4.0.0",

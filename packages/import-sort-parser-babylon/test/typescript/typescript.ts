@@ -4,15 +4,14 @@ import { assert } from 'chai';
 
 import { parseImports } from '../../lib';
 
-const parseTypeScriptImports = (code) => {
+const parseTypeScriptImports = (code: string) => {
   // No file name is passed to the parser here
   return parseImports(code, { file: __dirname + '/typescript.ts' });
 };
 
 describe('parseImports (TypeScript, without @babel/preset-typescript)', () => {
   it('should return imports', () => {
-    const imports = parseTypeScriptImports(
-      `
+    const imports = parseTypeScriptImports(`
 import "a";
 import b from "b";
 import {c} from "c";
@@ -22,7 +21,16 @@ import * as j from "k";
 import l, * as m from "o";
 
 // Random TypeScript syntax (that is not Flow syntax)
-const a: number = "123" as any;
+const someNumber: number = "123" as any;
+const someArrayNonTyped = <const> [
+  'ru', 'en'
+];
+const someArrayNonTypedAsConst = [
+  'ru', 'en'
+] as const;
+const someArray: readonly string[] = <const> [
+  'ru', 'en'
+];
 `.trim()
     );
 

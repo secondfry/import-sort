@@ -6,7 +6,7 @@
     "rootDir": "src"
   },
 
-  "include": ["src"],
+  "include": ["src/**/*"],
 
   "references": [{"path": "../import-sort-parser"}]
 }

@@ -4,15 +4,14 @@ import { assert } from 'chai';
 
 import { parseImports } from '../../lib';
 
-const parseFlowImports = (code) => {
+const parseFlowImports = (code: string) => {
   // Pass (fake) file name to the parser so it can read .babelrc
   return parseImports(code, { file: __dirname + '/flow.js' });
 };
 
 describe('parseImports (Flow, with @babel/preset-flow)', () => {
   it('should return default type import', () => {
-    const imports = parseFlowImports(
-      `
+    const imports = parseFlowImports(`
 import type p from 'q';
 `.trim()
     );
@@ -25,8 +24,7 @@ import type p from 'q';
   });
 
   it('should include type information for named type imports', () => {
-    const imports = parseFlowImports(
-      `
+    const imports = parseFlowImports(`
 import {type a} from "x";
 `.trim()
     );

@@ -5,10 +5,13 @@
     "outDir": "lib",
     "rootDir": "src",
 
-    "types": ["./@types"]
+    "typeRoots": [
+      "./@types",
+      "./node_modules/@types"
+    ],
   },
 
-  "include": ["src"],
+  "include": ["src/**/*"],
 
   "references": [{"path": "../import-sort-parser"}]
 }

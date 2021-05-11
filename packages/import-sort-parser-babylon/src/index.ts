@@ -1,89 +1,100 @@
 import { extname } from 'path';
 
 import {
+  ParseResult,
+  TransformOptions,
   loadOptions as babelLoadOptions,
   loadPartialConfig as babelLoadPartialOptions,
   parse as babelParse,
 } from '@babel/core';
-import { ParserOptions, parse as babelParserParse } from '@babel/parser';
+import { ParserOptions, ParserPlugin, parse as babelParserParse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import { isImportDefaultSpecifier, isImportNamespaceSpecifier, isImportSpecifier } from '@babel/types';
 import findLineColumn from 'find-line-column';
 import { IImport, IParserOptions, NamedMember } from 'forked-import-sort-parser';
 
+const logDebug = (...args: unknown[]) => {
+  if (!process.env.IMPORT_SORT_DEBUG) {
+    return;
+  }
+
+  console.log('[forked-import-sort-parser-babylon]', ...args);
+}
+
 const TYPESCRIPT_EXTENSIONS = ['.ts', '.tsx'];
+const JSX_EXTENSIONS = ['.jsx', '.tsx'];
 
 const COMMON_PARSER_PLUGINS = [
-  'jsx',
   'doExpressions',
-  'objectRestSpread',
-  ['decorators', { decoratorsBeforeExport: true }],
-  'classProperties',
-  'classPrivateProperties',
-  'classPrivateMethods',
   'exportDefaultFrom',
-  'exportNamespaceFrom',
-  'asyncGenerators',
   'functionBind',
-  'functionSent',
-  'dynamicImport',
-  'numericSeparator',
-  'optionalChaining',
   'importMeta',
-  'bigInt',
-  'optionalCatchBinding',
   'throwExpressions',
+  ['decorators', { decoratorsBeforeExport: true }],
   ['pipelineOperator', { proposal: 'minimal' }],
-  'nullishCoalescingOperator',
-];
+] as ParserPlugin[];
 
-const FLOW_PARSER_PLUGINS = ['flow', 'flowComments', ...COMMON_PARSER_PLUGINS];
+const FLOW_PARSER_PLUGINS = [
+  ...COMMON_PARSER_PLUGINS,
+  'flow',
+  'flowComments',
+] as ParserPlugin[];
 
-const FLOW_PARSER_OPTIONS = {
-  allowImportExportEverywhere: true,
-  allowAwaitOutsideFunction: true,
-  allowReturnOutsideFunction: true,
-  allowSuperOutsideMethod: true,
-
+const FLOW_PARSER_OPTIONS: ParserOptions = {
   sourceType: 'module',
-
   plugins: FLOW_PARSER_PLUGINS,
 };
 
-const TYPESCRIPT_PARSER_PLUGINS = ['typescript', ...COMMON_PARSER_PLUGINS];
+const TYPESCRIPT_PARSER_PLUGINS = [
+  ...COMMON_PARSER_PLUGINS,
+  'typescript',
+] as ParserPlugin[];
 
-const TYPESCRIPT_PARSER_OPTIONS = {
-  allowImportExportEverywhere: true,
-  allowAwaitOutsideFunction: true,
-  allowReturnOutsideFunction: true,
-  allowSuperOutsideMethod: true,
-
+const TYPESCRIPT_PARSER_OPTIONS: ParserOptions = {
   sourceType: 'module',
-
   plugins: TYPESCRIPT_PARSER_PLUGINS,
 };
 
-export function parseImports(code: string, options: IParserOptions = {}): IImport[] {
+const babelParseWithOptions = (code: string, options: IParserOptions = {}): ParseResult | null => {
   const babelPartialOptions = babelLoadPartialOptions({ filename: options.file });
+  logDebug('babelPartialOptions', babelPartialOptions);
 
-  let parsed;
-
-  if (babelPartialOptions.hasFilesystemConfig()) {
-    // We always prefer .babelrc (or similar) if one was found
-    parsed = babelParse(code, babelLoadOptions({ filename: options.file }));
-  } else {
-    const { file } = options;
-
-    const isTypeScript = file && TYPESCRIPT_EXTENSIONS.includes(extname(file));
-
-    const parserOptions = isTypeScript ? TYPESCRIPT_PARSER_OPTIONS : FLOW_PARSER_OPTIONS;
-
-    parsed = babelParserParse(code, (parserOptions as unknown) as ParserOptions);
+  // We always prefer .babelrc (or similar) if one was found
+  if (babelPartialOptions?.hasFilesystemConfig()) {
+    const babelOptions = babelLoadOptions({ filename: options.file }) as TransformOptions;
+    logDebug('babelOptions', babelOptions);
+    return babelParse(code, babelOptions );
   }
 
-  const imports: IImport[] = [];
+  const { file } = options;
+  const fileExt = extname(file ?? '');
 
-  const ignore = (parsed.comments || []).some((comment) => {
+  const isTypeScript = TYPESCRIPT_EXTENSIONS.includes(fileExt);
+  const isJsx = JSX_EXTENSIONS.includes(fileExt);
+
+  const parserOptions = isTypeScript ? TYPESCRIPT_PARSER_OPTIONS : FLOW_PARSER_OPTIONS;
+  if (isJsx) {
+    parserOptions.plugins?.push('jsx');
+  }
+
+  return babelParserParse(code, parserOptions);
+}
+
+export function parseImports(code: string, options: IParserOptions = {}): IImport[] {
+  const imports: IImport[] = [];
+  const parsed = babelParseWithOptions(code, options);
+
+  if (!parsed) {
+    console.error('Failed to parse.');
+    return imports;
+  }
+
+  if (parsed.type === "Program") {
+    console.error('Parsed as Program, IDK what to do.');
+    return imports;
+  }
+
+  const ignore = (parsed.comments ?? []).some((comment) => {
     return comment.value.includes('import-sort-ignore');
   });
 
@@ -130,7 +141,7 @@ export function parseImports(code: string, options: IParserOptions = {}): IImpor
         let previous: number | undefined;
 
         while (comments[current] && comments[current].start - 1 === end) {
-          if (comments[current].loc.start.line !== node.loc.start.line) {
+          if (comments[current].loc.start.line !== node.loc?.start.line) {
             break;
           }
 
@@ -141,11 +152,11 @@ export function parseImports(code: string, options: IParserOptions = {}): IImpor
       }
 
       const imported: IImport = {
-        start,
-        end,
+        start: start ?? 0,
+        end: end ?? 0,
 
-        importStart,
-        importEnd,
+        importStart: importStart ?? undefined,
+        importEnd: importEnd ?? undefined,
 
         moduleName: node.source.value,
 

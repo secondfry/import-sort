@@ -1,5 +1,5 @@
 import { IImport, ImportType, NamedMember } from 'forked-import-sort-parser';
-import * as typescript from 'typescript';
+import typescript from 'typescript';
 
 export function parseImports(code: string): IImport[] {
   const host: typescript.CompilerHost = {
@@ -162,7 +162,7 @@ function parseImportDeclaration(
 // additional underscore. We just remove the superfluous underscore here.
 //
 // See https://github.com/renke/import-sort/issues/18 for more details.
-function fixMultipleUnderscore(name) {
+function fixMultipleUnderscore(name: string) {
   if (name.match(/^_{2,}$/)) {
     return name.substring(1);
   }
